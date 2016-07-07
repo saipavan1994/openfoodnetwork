@@ -15,11 +15,12 @@ class EnterprisesController < BaseController
   def check_permalink
     return render text: params[:permalink], status: 409 if Enterprise.find_by_permalink params[:permalink]
 
-    path = Rails.application.routes.recognize_path( "/#{ params[:permalink].to_s }" )
-    if path && path[:controller] == "cms_content"
-      render text: params[:permalink], status: 200
-    else
+    begin
+      Rails.application.routes.recognize_path( "/#{ params[:permalink].to_s }" )
       render text: params[:permalink], status: 409
+
+    rescue ActionController::RoutingError
+      render text: params[:permalink], status: 200
     end
   end
 
